@@ -221,14 +221,8 @@ Resources:
       GroupDescription: "Allow SSH and RDP from Bastion Host"
       VpcId: !Ref VPC
       SecurityGroupIngress:
-        - IpProtocol: tcp
-          SourceSecurityGroupId: !Ref BastionHostSG
-          FromPort: '22'
-          ToPort: '22'
-        - IpProtocol: tcp
-          SourceSecurityGroupId: !Ref BastionHostSG
-          FromPort: '3389'
-          ToPort: '3389'
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-WorkloadSG'
