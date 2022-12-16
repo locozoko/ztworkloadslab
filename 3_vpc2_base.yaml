@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >
   This template deploys a VPC with a public subnet, zscaler private subnet, and a workloads private subnet. It also provisions 
-  a NAT Gateway per AZ and an Internet Gateway. It also provisions a bastion host and Linux and Windows workload instances.
+  a NAT Gateway per AZ and an Internet Gateway. It also provisions a bastion host and Linux workload instances.
   
 
 Metadata:
@@ -51,7 +51,7 @@ Parameters:
     Description: > 
       An environment name that is prefixed to resource names
     Type: String
-    Default: Lab-VPC
+    Default: Lab-VPC2
   
   KeyPair:
     Description: Key pair name
