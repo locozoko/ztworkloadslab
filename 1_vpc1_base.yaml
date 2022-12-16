@@ -178,7 +178,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} ZS Routes (AZ1)
+          Value: !Sub ${EnvironmentName} ZS Routes
 
   DefaultZSRoute:
     Type: AWS::EC2::Route
@@ -199,7 +199,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Workload Routes (AZ1)
+          Value: !Sub ${EnvironmentName} Workload Routes
 
   DefaultWorkloadRoute:
     Type: AWS::EC2::Route
