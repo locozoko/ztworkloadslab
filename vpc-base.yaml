@@ -1,0 +1,366 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  This template deploys a VPC with a public subnet, zscaler private subnet, and a workloads private subnet. It also provisions 
+  a NAT Gateway per AZ and an Internet Gateway. It also provisions a bastion host and Linux and Windows workload instances.
+  
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label: 
+          default: "My IP address"
+        Parameters:
+          - MyIP
+      - Label:
+          default: "EC2 Key Pair"
+        Parameters:
+          - KeyPair
+
+      - Label:
+          default: "VPC Details"
+        Parameters:
+          - EnvironmentName
+          - VpcCIDR
+          - PublicSubnetCIDR
+          - ZSSubnetCIDR
+          - WorkloadSubnetCIDR
+    
+    ParameterLabels:
+      MyIP:
+        default: "My IP address. Do NOT include /32 at the end as this will be added automatically"
+      EnvironmentName:
+        default: "Name of the self-contained environment"
+      VpcCIDR:
+        default: "VPC CIDR range"
+      PublicSubnetCIDR:
+        default: "Public subnet range"
+      ZSSubnetCIDR:
+        default: "Zscaler subnet range"
+      WorkloadSubnetCIDR:
+        default: "Workload subnet range"
+      KeyPair:
+        default: "Name of the key pair for use with bastion host and workload instances"
+
+Parameters:
+  MyIP:
+    Description: >
+      My IP address
+    Type: String
+    
+  EnvironmentName:
+    Description: > 
+      An environment name that is prefixed to resource names
+    Type: String
+    Default: Lab-VPC
+  
+  KeyPair:
+    Description: Key pair name
+    Type: AWS::EC2::KeyPair::KeyName
+    
+  VpcCIDR:
+    Description: > 
+      Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 10.192.0.0/16
+
+  PublicSubnetCIDR:
+    Description: >
+      Please enter the IP range (CIDR notation) for the public subnet 
+    Type: String
+    Default: 10.192.10.0/24
+
+  ZSSubnetCIDR:
+    Description: >
+      Please enter the IP range (CIDR notation) for the ZS subnet
+    Type: String
+    Default: 10.192.20.0/24
+
+  WorkloadSubnetCIDR:
+    Description: > 
+      Please enter the IP range (CIDR notation) for the Workload subnet
+    Type: String
+    Default: 10.192.30.0/24
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref PublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet
+
+  ZSSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref ZSSubnetCIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} ZS Subnet
+
+  WorkloadSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref WorkloadSubnetCIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Workload Subnet
+
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Routes
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet
+
+  ZSRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} ZS Routes (AZ1)
+
+  DefaultZSRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref ZSRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  ZSSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ZSRouteTable
+      SubnetId: !Ref ZSSubnet
+
+  WorkloadRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Workload Routes (AZ1)
+
+  DefaultWorkloadRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref WorkloadRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  WorkloadSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref WorkloadRouteTable
+      SubnetId: !Ref WorkloadSubnet
+
+  WorkloadInstanceSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "Workload-Instance-SG"
+      GroupDescription: "Allow SSH and RDP from Bastion Host"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          SourceSecurityGroupId: !Ref BastionHostSG
+          FromPort: '22'
+          ToPort: '22'
+        - IpProtocol: tcp
+          SourceSecurityGroupId: !Ref BastionHostSG
+          FromPort: '3389'
+          ToPort: '3389'
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-WorkloadSG'
+      
+  BastionHostSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "Bastion-Host-SG"
+      GroupDescription: "Security group for bastion host"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Join
+                    - ''
+                    - - !Ref MyIP
+                      - '/32'
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-BastionHostSG'
+
+  SSMIAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+
+  SSMProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Roles:
+        - !Ref SSMIAMRole
+
+  LinuxWorkloadInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
+      InstanceType: t2.micro
+      SubnetId: !Ref WorkloadSubnet
+      IamInstanceProfile: !Ref SSMProfile
+      KeyName: !Ref KeyPair 
+      SecurityGroupIds: 
+        - !Ref WorkloadInstanceSG
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-LinuxWorkloadInstance'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo sed 's/PasswordAuthentication no/PasswordAuthentication yes/' -i /etc/ssh/sshd_config
+          sudo systemctl restart sshd
+          sudo service sshd restart
+          echo 'Zscaler123!' | sudo passwd --stdin ec2-user
+          sleep 15
+          sudo yum update -y
+          sudo yum install cloud-init -y
+          sudo yum install httpd.x86_64 -y
+          sudo systemctl start httpd.service
+          sudo systemctl enable httpd.service
+          sudo echo "Private Workload 1" > /var/www/html/index.html
+          echo "PS1=\"[\\u@Workload1 \\W]\\$ \"" >> /home/ec2-user/.bashrc
+
+  LinuxWorkloadInstance2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
+      InstanceType: t2.micro
+      SubnetId: !Ref WorkloadSubnet
+      IamInstanceProfile: !Ref SSMProfile
+      KeyName: !Ref KeyPair 
+      SecurityGroupIds: 
+        - !Ref WorkloadInstanceSG
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-LinuxWorkloadInstance2'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo sed 's/PasswordAuthentication no/PasswordAuthentication yes/' -i /etc/ssh/sshd_config
+          sudo systemctl restart sshd
+          sudo service sshd restart
+          echo 'Zscaler123!' | sudo passwd --stdin ec2-user
+          sleep 15
+          sudo yum update -y
+          sudo yum install cloud-init -y
+          sudo yum install httpd.x86_64 -y
+          sudo systemctl start httpd.service
+          sudo systemctl enable httpd.service
+          sudo echo "Private Workload 2" > /var/www/html/index.html
+          echo "PS1=\"[\\u@Workload2 \\W]\\$ \"" >> /home/ec2-user/.bashrc
+  
+  BastionHost:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet
+      IamInstanceProfile: !Ref SSMProfile
+      KeyName: !Ref KeyPair 
+      SecurityGroupIds: 
+        - !Ref BastionHostSG
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-BastionHost'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Install updates
+          yum update -y
+          # Update prompt to reflect instance name
+          echo "PS1=\"[\\u@BastionHost \\W]\\$ \"" >> /home/ec2-user/.bashrc
+
+Outputs:
+  
+  ReverseTunnel:
+    Description: Run the following command to create a reverse tunnel via the bastion host
+    Value: !Sub 'ssh -i ${KeyPair}.pem  -L 64001:${LinuxWorkloadInstance.PrivateIp}:22 ec2-user@${BastionHost.PublicDnsName} -L 64002:${LinuxWorkloadInstance2.PrivateIp}:22 ec2-user@${BastionHost.PublicDnsName}'
+  
+  LinuxWorkloadInstance:
+    Description: Connect to the Linux workload instance 1
+    Value: !Sub 'ssh -i ${KeyPair}.pem -p 64001 -o StrictHostKeyChecking=no ec2-user@localhost'
+  
+  LinuxWorkloadInstance2:
+    Description: Connect to the Linux workload instance 2
+    Value: !Sub 'ssh -i ${KeyPair}.pem -p 64002 -o StrictHostKeyChecking=no ec2-user@localhost'
