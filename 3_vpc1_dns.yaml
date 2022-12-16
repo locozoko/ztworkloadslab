@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template creates a Route 53 Private Hosted Zone for Lab
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label: 
+          default: "VPC"
+        Parameters:
+          - MyVPC
+      - Label:
+          default: "DNS Zone"
+        Parameters:
+          - MyDnsZone
+
+      - Label:
+          default: "Workload App IP Addresses"
+        Parameters:
+          - WorkloadAppIP1
+          - WorkloadAppIP2
+    
+    ParameterLabels:
+      MyVPC:
+        default: "Select the VPC where the App Connector is deployed"
+      MyDnsZone:
+        default: "Type an internal domain name for your DNS Zone"
+      WorkloadAppIP1:
+        default: "Type the private IP of workload 1 EC2"
+      WorkloadAppIP2:
+        default: "Type the private IP of workload 2 EC2"
+
+Parameters:
+  MyVPC:
+    Description: >
+      VPC for App Connector
+    Type: 'AWS::EC2::VPC::Id'
+  
+  MyDnsZone:
+    Description: > 
+      Domain for DNS Zone
+    Type: String
+    
+  WorkloadAppIP1:
+    Description: > 
+      IP Address of Workload 1 Application
+    Type: String
+
+  WorkloadAppIP2:
+    Description: > 
+      IP Address of Workload 1 Application
+    Type: String
+
+Resources:
+
+  DNSZone: 
+    Type: "AWS::Route53::HostedZone"
+    Properties: 
+      HostedZoneConfig: 
+        Comment: 'DNS Hosted Zone'
+      Name: !Ref MyDnsZone
+      VPCs: 
+        - 
+          VPCId: !Ref MyVPC
+          VPCRegion: AWS::Region
+
+  DNSWorkloadApp1:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub '${MyDnsZone}.'
+      Name: !Sub 'app1.${MyDnsZone}'
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+          - !Ref WorkloadAppIP1
+
+  DNSWorkloadApp2:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub '${MyDnsZone}.'
+      Name: !Sub 'app1.${MyDnsZone}'
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+          - !Ref WorkloadAppIP2

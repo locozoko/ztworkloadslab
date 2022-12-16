@@ -86,7 +86,7 @@ Resources:
           SubnetId: !Ref MySubnetId
       Tags:
          - Key: "Name"
-           Value: "ZPA App Connector"
+           Value: "ZPA Lab App Connector"
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
