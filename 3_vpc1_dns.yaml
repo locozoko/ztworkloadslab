@@ -8,6 +8,10 @@ Metadata:
           default: "VPC"
         Parameters:
           - MyVPC
+      - Label: 
+          default: "Region"
+        Parameters:
+          - MyRegion
       - Label:
           default: "DNS Zone"
         Parameters:
@@ -22,6 +26,8 @@ Metadata:
     ParameterLabels:
       MyVPC:
         default: "Select the VPC where the App Connector is deployed"
+      MyRegion:
+        default: "Select the Region where the App Connector is deployed"
       MyDnsZone:
         default: "Type an internal domain name for your DNS Zone"
       WorkloadAppIP1:
@@ -35,6 +41,41 @@ Parameters:
       VPC for App Connector
     Type: 'AWS::EC2::VPC::Id'
   
+  MyRegion:
+    Description: >
+      Region for App Connector
+    Type: String
+    Default: us-east-1
+    AllowedValues:
+      - us-east-2
+      - us-east-1
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-northeast-1
+      - ap-southeast-1
+      - ap-southeast-2
+      - ca-central-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    
   MyDnsZone:
     Description: > 
       Domain for DNS Zone
@@ -61,7 +102,7 @@ Resources:
       VPCs: 
         - 
           VPCId: !Ref MyVPC
-          VPCRegion: AWS::Region
+          VPCRegion: !Ref MyRegion
 
   DNSWorkloadApp1:
     Type: AWS::Route53::RecordSet
@@ -72,6 +113,7 @@ Resources:
       TTL: '300'
       ResourceRecords:
           - !Ref WorkloadAppIP1
+    DependsOn: DNSZone
 
   DNSWorkloadApp2:
     Type: AWS::Route53::RecordSet
@@ -82,3 +124,4 @@ Resources:
       TTL: '300'
       ResourceRecords:
           - !Ref WorkloadAppIP2
+    DependsOn: DNSZone
