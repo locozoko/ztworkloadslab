@@ -119,7 +119,7 @@ Resources:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneName: !Sub '${MyDnsZone}.'
-      Name: !Sub 'app1.${MyDnsZone}'
+      Name: !Sub 'app2.${MyDnsZone}'
       Type: A
       TTL: '300'
       ResourceRecords:
