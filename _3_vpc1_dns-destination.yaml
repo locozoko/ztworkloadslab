@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: This template creates a Route 53 Private Hosted Zone for Lab
+Description: This template creates a Route 53 Private Hosted Zone for the Lab VPC
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -18,7 +18,7 @@ Metadata:
           - MyDnsZone
 
       - Label:
-          default: "Workload App IP Addresses"
+          default: "App Server IP Addresses"
         Parameters:
           - WorkloadAppIP1
           - WorkloadAppIP2
@@ -31,9 +31,9 @@ Metadata:
       MyDnsZone:
         default: "Type an internal domain name for your DNS Zone"
       WorkloadAppIP1:
-        default: "Type the private IP of workload 1 EC2"
+        default: "Type the private IP of App1 EC2"
       WorkloadAppIP2:
-        default: "Type the private IP of workload 2 EC2"
+        default: "Type the private IP of App2 EC2"
 
 Parameters:
   MyVPC:

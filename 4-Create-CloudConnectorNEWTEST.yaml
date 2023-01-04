@@ -329,6 +329,7 @@ Resources:
       UserData: !Base64
         Fn::Join:
           - |+
+
           - - '[ZSCALER]'
             - Fn::Join
               - =

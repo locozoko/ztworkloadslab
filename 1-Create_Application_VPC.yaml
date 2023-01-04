@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >
-  This template deploys a VPC with a public subnet, zscaler private subnet, and a workloads private subnet. It also provisions 
-  a NAT Gateway per AZ and an Internet Gateway. It also provisions a bastion host and Linux workload instances.
+  This template deploys a VPC with a public subnet, an applications private subnet, DNS, NAT and Internet Gateways. 
+  It also provisions a Linux Bastion host, ZPA App Connector, and Linux application instances.
   
 
 Metadata:
@@ -20,26 +20,31 @@ Metadata:
           default: "VPC Details"
         Parameters:
           - EnvironmentName
-          - VpcCIDR
-          - PublicSubnetCIDR
-          - ZSSubnetCIDR
-          - WorkloadSubnetCIDR
+
+      - Label:
+          default: "ZPA Details"
+        Parameters:
+          - ZpaProvisioningKey
+
+      - Label:
+          default: "DNS Zone Details"
+        Parameters:
+          - MyDnsZone
+          - MyRegion
     
     ParameterLabels:
       MyIP:
         default: "My IP address. Do NOT include /32 at the end as this will be added automatically"
       EnvironmentName:
         default: "Name of the self-contained environment"
-      VpcCIDR:
-        default: "VPC CIDR range"
-      PublicSubnetCIDR:
-        default: "Public subnet range"
-      ZSSubnetCIDR:
-        default: "Zscaler subnet range"
-      WorkloadSubnetCIDR:
-        default: "Workload subnet range"
       KeyPair:
-        default: "Name of the key pair for use with bastion host and workload instances"
+        default: "Name of the key pair for use with bastion host and Application instances"
+      ZpaProvisioningKey:
+        default: "ProvisioningKey"
+      MyDnsZone:
+        default: "Type an internal domain name for your DNS Zone"
+      MyRegion:
+        default: "Select the Region where this lab will be deployed"
 
 Parameters:
   MyIP:
@@ -56,36 +61,58 @@ Parameters:
   KeyPair:
     Description: Key pair name
     Type: AWS::EC2::KeyPair::KeyName
-    
-  VpcCIDR:
-    Description: > 
-      Please enter the IP range (CIDR notation) for this VPC
-    Type: String
-    Default: 10.192.0.0/16
 
-  PublicSubnetCIDR:
+  ZpaProvisioningKey:
+    Description: The ZPA provisioning key to use
+    Type: String
+    ConstraintDescription: As copied from ZPA UI - do not add extra characters or double quotes!
+
+  MyRegion:
     Description: >
-      Please enter the IP range (CIDR notation) for the public subnet 
+      Region for App Connector
     Type: String
-    Default: 10.192.10.0/24
+    Default: us-east-1
+    AllowedValues:
+      - us-east-2
+      - us-east-1
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-northeast-1
+      - ap-southeast-1
+      - ap-southeast-2
+      - ca-central-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
-  ZSSubnetCIDR:
-    Description: >
-      Please enter the IP range (CIDR notation) for the ZS subnet
-    Type: String
-    Default: 10.192.20.0/24
-
-  WorkloadSubnetCIDR:
+  MyDnsZone:
     Description: > 
-      Please enter the IP range (CIDR notation) for the Workload subnet
+      Domain for DNS Zone
     Type: String
-    Default: 10.192.30.0/24
+    Default: "mytestdomain.com"
 
 Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCIDR
+      CidrBlock: "10.192.0.0/16"
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -110,33 +137,22 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: !Ref PublicSubnetCIDR
+      CidrBlock: "10.192.10.0/24"
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Subnet
 
-  ZSSubnet:
+  ApplicationSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref ZSSubnetCIDR
+      CidrBlock: "10.192.30.0/24"
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} ZS Subnet
-
-  WorkloadSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref WorkloadSubnetCIDR
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} Workload Subnet
+          Value: !Sub ${EnvironmentName} Application Subnet
 
   NatGatewayEIP:
     Type: AWS::EC2::EIP
@@ -172,52 +188,31 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet
 
-  ZSRouteTable:
+  ApplicationRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} ZS Routes
+          Value: !Sub ${EnvironmentName} Application Routes
 
-  DefaultZSRoute:
+  DefaultApplicationRoute:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref ZSRouteTable
+      RouteTableId: !Ref ApplicationRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NatGateway
 
-  ZSSubnetRouteTableAssociation:
+  ApplicationSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref ZSRouteTable
-      SubnetId: !Ref ZSSubnet
+      RouteTableId: !Ref ApplicationRouteTable
+      SubnetId: !Ref ApplicationSubnet
 
-  WorkloadRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} Workload Routes
-
-  DefaultWorkloadRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref WorkloadRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
-
-  WorkloadSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref WorkloadRouteTable
-      SubnetId: !Ref WorkloadSubnet
-
-  WorkloadInstanceSG:
+  ApplicationInstanceSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: "Workload-Instance-SG"
+      GroupName: "Application-Instance-SG"
       GroupDescription: "Allow SSH and RDP from Bastion Host"
       VpcId: !Ref VPC
       SecurityGroupIngress:
@@ -225,7 +220,7 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub '${AWS::StackName}-WorkloadSG'
+          Value: !Sub '${AWS::StackName}-ApplicationSG'
       
   BastionHostSG:
     Type: AWS::EC2::SecurityGroup
@@ -266,19 +261,19 @@ Resources:
       Roles:
         - !Ref SSMIAMRole
 
-  LinuxWorkloadInstance:
+  LinuxApplicationInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
       InstanceType: t2.micro
-      SubnetId: !Ref WorkloadSubnet
+      SubnetId: !Ref ApplicationSubnet
       IamInstanceProfile: !Ref SSMProfile
       KeyName: !Ref KeyPair 
       SecurityGroupIds: 
-        - !Ref WorkloadInstanceSG
+        - !Ref ApplicationInstanceSG
       Tags:
         - Key: Name
-          Value: !Sub '${AWS::StackName}-WorkloadApp1'
+          Value: !Sub '${AWS::StackName}-App1'
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -292,22 +287,22 @@ Resources:
           sudo yum install httpd.x86_64 -y
           sudo systemctl start httpd.service
           sudo systemctl enable httpd.service
-          sudo echo "Private Workload 1" > /var/www/html/index.html
-          echo "PS1=\"[\\u@Workload1 \\W]\\$ \"" >> /home/ec2-user/.bashrc
+          sudo echo "Private Application 1" > /var/www/html/index.html
+          echo "PS1=\"[\\u@App1 \\W]\\$ \"" >> /home/ec2-user/.bashrc
 
-  LinuxWorkloadInstance2:
+  LinuxApplicationInstance2:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
       InstanceType: t2.micro
-      SubnetId: !Ref WorkloadSubnet
+      SubnetId: !Ref ApplicationSubnet
       IamInstanceProfile: !Ref SSMProfile
       KeyName: !Ref KeyPair 
       SecurityGroupIds: 
-        - !Ref WorkloadInstanceSG
+        - !Ref ApplicationInstanceSG
       Tags:
         - Key: Name
-          Value: !Sub '${AWS::StackName}-WorkloadApp2'
+          Value: !Sub '${AWS::StackName}-App2'
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -321,8 +316,8 @@ Resources:
           sudo yum install httpd.x86_64 -y
           sudo systemctl start httpd.service
           sudo systemctl enable httpd.service
-          sudo echo "Private Workload 2" > /var/www/html/index.html
-          echo "PS1=\"[\\u@Workload2 \\W]\\$ \"" >> /home/ec2-user/.bashrc
+          sudo echo "Private Application 2" > /var/www/html/index.html
+          echo "PS1=\"[\\u@App2 \\W]\\$ \"" >> /home/ec2-user/.bashrc
   
   BastionHost:
     Type: 'AWS::EC2::Instance'
@@ -345,16 +340,113 @@ Resources:
           # Update prompt to reflect instance name
           echo "PS1=\"[\\u@BastionHost \\W]\\$ \"" >> /home/ec2-user/.bashrc
 
+  AppConnEC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/marketplace/prod-l52usx2iyugek/zpa-connector-ami-2022.11}}'
+      InstanceType: "t3.medium"
+      KeyName: !Ref KeyPair
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "false"
+          DeviceIndex: "0"
+          GroupSet:
+          - !Ref ApplicationInstanceSG
+          SubnetId: !Ref ApplicationSubnet
+      Tags:
+         - Key: "Name"
+           Value: !Sub '${AWS::StackName}-AppConnector'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          #Stop the App Connector service which was auto-started at boot time
+          systemctl stop zpa-connector
+          #Copy App Connector provisioning key from ZPA Admin Portal to a file
+          #The provisioning key must be within between double quotes
+          echo "${ZpaProvisioningKey}" > /opt/zscaler/var/provision_key
+          #Run a yum update to apply the latest patches
+          yum update -y
+          #Start the App Connector service to enroll it in the ZPA cloud
+          systemctl start zpa-connector
+          #Wait for the App Connector to download the latest build
+          sleep 60
+          #Stop and then start the App Connector to run the latest build
+          systemctl stop zpa-connector
+          systemctl start zpa-connector
+
+  DNSZone: 
+    Type: "AWS::Route53::HostedZone"
+    Properties: 
+      HostedZoneConfig: 
+        Comment: 'DNS Hosted Zone'
+      Name: !Ref MyDnsZone
+      VPCs: 
+        - 
+          VPCId: !Ref VPC
+          VPCRegion: !Ref MyRegion
+    DependsOn: VPC
+
+  DNSApplicationApp1:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub '${MyDnsZone}.'
+      Name: !Sub 'app1.${MyDnsZone}'
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+          - !GetAtt LinuxApplicationInstance.PrivateIp
+    DependsOn: 
+      - DNSZone
+      - ApplicationSubnet
+      - LinuxApplicationInstance
+
+  DNSApplicationApp2:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub '${MyDnsZone}.'
+      Name: !Sub 'app2.${MyDnsZone}'
+      Type: A
+      TTL: '300'
+      ResourceRecords:
+          - !GetAtt LinuxApplicationInstance2.PrivateIp
+    DependsOn:
+      - DNSZone
+      - ApplicationSubnet
+      - LinuxApplicationInstance2
+
 Outputs:
-  
-  ReverseTunnel:
-    Description: Run the following command to create a reverse tunnel via the bastion host
-    Value: !Sub 'ssh -i ${KeyPair}.pem  -L 64001:${LinuxWorkloadInstance.PrivateIp}:22 ec2-user@${BastionHost.PublicDnsName} -L 64002:${LinuxWorkloadInstance2.PrivateIp}:22 ec2-user@${BastionHost.PublicDnsName}'
-  
-  LinuxWorkloadInstance:
-    Description: Connect to the Linux workload instance 1
-    Value: !Sub 'ssh -i ${KeyPair}.pem -p 64001 -o StrictHostKeyChecking=no ec2-user@localhost'
-  
-  LinuxWorkloadInstance2:
-    Description: Connect to the Linux workload instance 2
-    Value: !Sub 'ssh -i ${KeyPair}.pem -p 64002 -o StrictHostKeyChecking=no ec2-user@localhost'
+
+  AppConnPrivateIP:
+    Description: App Connector Private IP
+    Value: !GetAtt
+      - AppConnEC2Instance
+      - PrivateIp
+
+  AppServer1IP:
+    Description: App Connector Private IP
+    Value: !GetAtt
+      - LinuxApplicationInstance
+      - PrivateIp
+
+  AppServer2IP:
+    Description: App Connector Private IP
+    Value: !GetAtt
+      - LinuxApplicationInstance2
+      - PrivateIp
+
+  PublicBastionIP:
+    Description: Bastion Host Public IP
+    Value: !GetAtt
+      - BastionHost
+      - PublicIp
+
+  DnsZoneName:
+    Description: DNS Zone Name
+    Value: !Ref MyDnsZone
+
+  AppServer1FQDN:
+    Description: App Server 1 FQDN
+    Value: !Ref DNSApplicationApp1
+
+  AppServer2FQDN:
+    Description: App Server 1 FQDN
+    Value: !Ref DNSApplicationApp2

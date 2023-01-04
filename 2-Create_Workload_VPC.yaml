@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >
-  This template deploys a VPC with a public subnet, zscaler private subnet, and a workloads private subnet. It also provisions 
-  a NAT Gateway per AZ and an Internet Gateway. It also provisions a bastion host and Linux workload instances.
+  This template deploys a VPC with a public subnet, a workloads private subnet, NAT and Internet Gateways. 
+  It also provisions a Linux Bastion host and Linux workload instance.
   
 
 Metadata:
@@ -278,7 +278,7 @@ Resources:
         - !Ref WorkloadInstanceSG
       Tags:
         - Key: Name
-          Value: !Sub '${AWS::StackName}-WorkloadApp1'
+          Value: !Sub '${AWS::StackName}-Workload'
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -293,36 +293,7 @@ Resources:
           sudo systemctl start httpd.service
           sudo systemctl enable httpd.service
           sudo echo "Private Workload 1" > /var/www/html/index.html
-          echo "PS1=\"[\\u@Workload1 \\W]\\$ \"" >> /home/ec2-user/.bashrc
-
-  LinuxWorkloadInstance2:
-    Type: 'AWS::EC2::Instance'
-    Properties:
-      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
-      InstanceType: t2.micro
-      SubnetId: !Ref WorkloadSubnet
-      IamInstanceProfile: !Ref SSMProfile
-      KeyName: !Ref KeyPair 
-      SecurityGroupIds: 
-        - !Ref WorkloadInstanceSG
-      Tags:
-        - Key: Name
-          Value: !Sub '${AWS::StackName}-WorkloadApp2'
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          sudo sed 's/PasswordAuthentication no/PasswordAuthentication yes/' -i /etc/ssh/sshd_config
-          sudo systemctl restart sshd
-          sudo service sshd restart
-          echo 'Zscaler123!' | sudo passwd --stdin ec2-user
-          sleep 15
-          sudo yum update -y
-          sudo yum install cloud-init -y
-          sudo yum install httpd.x86_64 -y
-          sudo systemctl start httpd.service
-          sudo systemctl enable httpd.service
-          sudo echo "Private Workload 2" > /var/www/html/index.html
-          echo "PS1=\"[\\u@Workload2 \\W]\\$ \"" >> /home/ec2-user/.bashrc
+          echo "PS1=\"[\\u@Workload \\W]\\$ \"" >> /home/ec2-user/.bashrc
   
   BastionHost:
     Type: 'AWS::EC2::Instance'
@@ -347,14 +318,14 @@ Resources:
 
 Outputs:
   
-  ReverseTunnel:
-    Description: Run the following command to create a reverse tunnel via the bastion host
-    Value: !Sub 'ssh -i ${KeyPair}.pem  -L 64001:${LinuxWorkloadInstance.PrivateIp}:22 ec2-user@${BastionHost.PublicDnsName} -L 64002:${LinuxWorkloadInstance2.PrivateIp}:22 ec2-user@${BastionHost.PublicDnsName}'
-  
-  LinuxWorkloadInstance:
-    Description: Connect to the Linux workload instance 1
-    Value: !Sub 'ssh -i ${KeyPair}.pem -p 64001 -o StrictHostKeyChecking=no ec2-user@localhost'
-  
-  LinuxWorkloadInstance2:
-    Description: Connect to the Linux workload instance 2
-    Value: !Sub 'ssh -i ${KeyPair}.pem -p 64002 -o StrictHostKeyChecking=no ec2-user@localhost'
+  WorkloadIP:
+    Description: Workload Private IP
+    Value: !GetAtt
+      - LinuxWorkloadInstance
+      - PrivateIp
+
+  PublicBastionIP:
+    Description: Bastion Host Public IP
+    Value: !GetAtt
+      - BastionHost
+      - PublicIp

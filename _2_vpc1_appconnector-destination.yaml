@@ -86,7 +86,7 @@ Resources:
           SubnetId: !Ref MySubnetId
       Tags:
          - Key: "Name"
-           Value: "ZPA Lab App Connector"
+           Value: !Sub '${AWS::StackName}-AppConnector'
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
