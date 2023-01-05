@@ -51,7 +51,7 @@ Parameters:
     Description: > 
       An environment name that is prefixed to resource names
     Type: String
-    Default: Lab-VPC2
+    Default: ZPACCLAB-WKLDVPC
   
   KeyPair:
     Description: Key pair name
