@@ -109,15 +109,10 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
     > **_NOTE:_** This can take serveral minutes to complete
 1. TEST 123
 
-
-
 ## Deploy the Workload VPC Resources
 <sup>[(Back to top)](#table-of-contents)</sup>
 
-1. Log into your AWS Account
-1. Change to the following region: *US East (N. Virginia) us-east-1*. 
-    > **_NOTE:_** You can use other regions but this lab guide and CloudFormationtemplates were built in the us-east-1 region so I know it works.
-1. Navigate to the CloudFormation service
+1. Navigate to AWS Admin Console > CloudFormation service
 1. Click Create Stack > With new resources (Standard)
 1. Select the Upload a template file option
 1. Click Choose file
@@ -129,9 +124,6 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
         > **_NOTE:_** This is used to lock down SSH Access to the Public Bastion Host.
     * Select your Key Pair in the EC2 Key Pair field
     * Leave the default environment name
-    * Paste your ZPA App Connector Provisioning Key into the ProvisioningKey field
-    * Type a domain name to use for the lab in the Domain field. This will create a private DNS Zone only so you can use any domain you want
-    * Select the region you are deploy the resources into. It must be the same region you are currently using within the AWS admin console
 1. Click Next
 1. Click Add new tag
     * Key: Owner
