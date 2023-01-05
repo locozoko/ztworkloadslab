@@ -114,6 +114,35 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## Deploy the Workload VPC Resources
 <sup>[(Back to top)](#table-of-contents)</sup>
 
+1. Log into your AWS Account
+1. Change to the following region: *US East (N. Virginia) us-east-1*. 
+    > **_NOTE:_** You can use other regions but this lab guide and CloudFormationtemplates were built in the us-east-1 region so I know it works.
+1. Navigate to the CloudFormation service
+1. Click Create Stack > With new resources (Standard)
+1. Select the Upload a template file option
+1. Click Choose file
+1. Navigate to the directory where you cloned/downloaded the CFTs in this repo
+1. Select the file: 2-Create_Workload_VPC.yaml
+1. Click Next
+    * Provide a stack name such as: ZPACCLAB-WKLDVPC
+    * Fill out the My IP Address field with your Public IP Address (this can be found at ip.zscaler.com, ipchicken.com, etc). 
+        > **_NOTE:_** This is used to lock down SSH Access to the Public Bastion Host.
+    * Select your Key Pair in the EC2 Key Pair field
+    * Leave the default environment name
+    * Paste your ZPA App Connector Provisioning Key into the ProvisioningKey field
+    * Type a domain name to use for the lab in the Domain field. This will create a private DNS Zone only so you can use any domain you want
+    * Select the region you are deploy the resources into. It must be the same region you are currently using within the AWS admin console
+1. Click Next
+1. Click Add new tag
+    * Key: Owner
+    * Value: your_first_name
+1. Click Next
+1. Check the box for I acknowledge that AWS CloudFormation might create IAM resources
+1. Click Submit
+1. Wait until the CloudFormation Stack Status changes from CREATE_IN_PROGRESS (blue) to CREATE_COMPLETE (green) before continuing
+    > **_NOTE:_** This can take serveral minutes to complete
+1. TEST 123
+
 ## Deploy the Cloud Connector Resources
 <sup>[(Back to top)](#table-of-contents)</sup>
 

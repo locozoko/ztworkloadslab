@@ -20,24 +20,12 @@ Metadata:
           default: "VPC Details"
         Parameters:
           - EnvironmentName
-          - VpcCIDR
-          - PublicSubnetCIDR
-          - ZSSubnetCIDR
-          - WorkloadSubnetCIDR
     
     ParameterLabels:
       MyIP:
         default: "My IP address. Do NOT include /32 at the end as this will be added automatically"
       EnvironmentName:
         default: "Name of the self-contained environment"
-      VpcCIDR:
-        default: "VPC CIDR range"
-      PublicSubnetCIDR:
-        default: "Public subnet range"
-      ZSSubnetCIDR:
-        default: "Zscaler subnet range"
-      WorkloadSubnetCIDR:
-        default: "Workload subnet range"
       KeyPair:
         default: "Name of the key pair for use with bastion host and workload instances"
 
@@ -56,36 +44,12 @@ Parameters:
   KeyPair:
     Description: Key pair name
     Type: AWS::EC2::KeyPair::KeyName
-    
-  VpcCIDR:
-    Description: > 
-      Please enter the IP range (CIDR notation) for this VPC
-    Type: String
-    Default: 10.192.0.0/16
-
-  PublicSubnetCIDR:
-    Description: >
-      Please enter the IP range (CIDR notation) for the public subnet 
-    Type: String
-    Default: 10.192.10.0/24
-
-  ZSSubnetCIDR:
-    Description: >
-      Please enter the IP range (CIDR notation) for the ZS subnet
-    Type: String
-    Default: 10.192.20.0/24
-
-  WorkloadSubnetCIDR:
-    Description: > 
-      Please enter the IP range (CIDR notation) for the Workload subnet
-    Type: String
-    Default: 10.192.30.0/24
 
 Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCIDR
+      CidrBlock: '10.192.0.0/16'
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -110,7 +74,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: !Ref PublicSubnetCIDR
+      CidrBlock: '10.192.10.0/24'
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -121,7 +85,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref ZSSubnetCIDR
+      CidrBlock: '10.192.20.0/24'
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -132,7 +96,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref WorkloadSubnetCIDR
+      CidrBlock: '10.192.30.0/24'
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
