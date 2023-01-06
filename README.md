@@ -16,8 +16,8 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
   - [Configure ZPA Access Policy](#configure-zpa-access-policy)
   - [Configure ZPA Client Forwarding Policy](#configure-zpa-client-forwarding-policy)
   - [Configure Cloud Connector Traffic Forwarding Policy](#configure-cloud-connector-traffic-forwarding-policy)
-  - [Configure Workloads to Route to Cloud Connector](#configure-workloads-to-route-to-cloud-connector)
   - [Deploy AWS DNS Resolvers for Lab Domain](#deploy-aws-dns-resolvers-for-lab-domain)
+  - [Configure Workload Subnet to Route to Cloud Connector](#configure-workload-subnet-to-route-to-cloud-connector)
   - [Test Workload to Private App Access](#test-workload-to-private-app-access)
   - [Tear Down Load](#tear-down-lab)
 
@@ -45,6 +45,9 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 - All Cloud Connector prerequisites should be completed as normal. This is out of scope for the lab.
 - The Cloud Connector tenant must have the ZPA-SERVER-PRE SKU enabled
+- Cloud Connector API Key and Credentials must be stored in AWS Secrets Manager in the same Account and Region you plan to deploy the lab
+- A Cloud Connector AWS Provisioning Template needs to exist. 
+- [For help, see the Cloud Connector POV Tenant Prep Guide for SEs](https://docs.google.com/document/d/17imm9_A6ByKAbDOeVGIAQQGW0rRxig5RLiXG0RAYc44/edit#heading=h.1kaphb5p9m0k)
 - [For help, see this Cloud Connector AWS Prerequistes Guide](https://docs.google.com/document/d/1Fvo151a_bcj-p8xX7y3FOeh2uKhXxf5SQJ9c7mzWNv8/edit)
 - [For more help, see the Cloud Connector Help Portal on this topic](https://help.zscaler.com/cloud-connector/deploying-cloud-connector-amazon-web-services)
 
@@ -90,7 +93,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Navigate to the directory where you cloned/downloaded the CFTs in this repo
 1. Select the file: 1-Create_Application_VPC.yaml
 1. Click Next
-    * Provide a stack name such as: ZPACCLAB-APPVPC
+    * Provide a stack name: ZPACCLAB-APPVPC
     * Fill out the My IP Address field with your Public IP Address (this can be found at ip.zscaler.com, ipchicken.com, etc). 
         > **_NOTE:_** This is used to lock down SSH Access to the Public Bastion Host.
     * Select your Key Pair in the EC2 Key Pair field
@@ -119,7 +122,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Navigate to the directory where you cloned/downloaded the CFTs in this repo
 1. Select the file: 2-Create_Workload_VPC.yaml
 1. Click Next
-    * Provide a stack name such as: ZPACCLAB-WKLDVPC
+    * Provide a stack name: ZPACCLAB-WKLDVPC
     * Fill out the My IP Address field with your Public IP Address (this can be found at ip.zscaler.com, ipchicken.com, etc). 
         > **_NOTE:_** This is used to lock down SSH Access to the Public Bastion Host.
     * Select your Key Pair in the EC2 Key Pair field
@@ -138,25 +141,148 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## Deploy the Cloud Connector Resources
 <sup>[(Back to top)](#table-of-contents)</sup>
 
+1. Navigate to AWS Admin Console > CloudFormation service
+1. Click Create Stack > With new resources (Standard)
+1. Select the Upload a template file option
+1. Click Choose file
+1. Navigate to the directory where you cloned/downloaded the CFTs in this repo
+1. Select the file: 3-Create_Macro.yaml
+1. Click Next and provide the following:
+    * Stack Name: ZPACCLAB-MACRO
+1. Click Next
+1. Click Add new tag
+    * Key: Owner
+    * Value: your_first_name
+1. Click Next
+1. Check the box for I acknowledge that AWS CloudFormation might create IAM resources
+1. Click Submit
+1. Click Create Stack > With new resources (Standard)
+1. Select the Upload a template file option
+1. Click Choose file
+1. Select the file: 4-Create_CloudConnector.yaml
+1. Click Next and Provide the following:
+    * Stack Name: ZPACCLAB-CC
+    * Select the Workload VPC Created Previously (ZPACCLAB-WKLDVPC)
+    * Select the AZ: us-east-1a
+    * Select the Subnet in the Workload VPC: ZSSubnet
+    * Select your EC2 Key Pair
+    * Keep the Instance Size: small
+    * Keep the Instance Type: t3.medium
+    * Paste your Cloud Connector AWS Provisioning URL
+    * Paste the name of the AWS Secrets Manager your Cloud Connector API Key and Credentials are stored in
+    * Keep the Probe Port: 50000
+1. Click Next
+1. Click Add new tag
+    * Key: Owner
+    * Value: your_first_name
+1. Click Next and check the boxes for:
+    * I acknowledge that AWS CloudFormation might create IAM resources.
+    * I acknowledge that AWS CloudFormation might create IAM resources with custom names.
+    * I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND
+1. Click Submit
+    > **_NOTE:_** Cloud Connectors can take up to 10 minutes to be Active after deployed
+1. Log into your Cloud Connector admin portal
+1. Verify the Cloud Connector is Active (Green) in the Dashboard
+    > **IMPORTANT:_** DO NOT PROCEED UNTIL THIS HAPPENS
+
 ## Verify No Connectivity between VPCs
 <sup>[(Back to top)](#table-of-contents)</sup>
 
 ## Configure ZPA Application Segments
 <sup>[(Back to top)](#table-of-contents)</sup>
 
+1. Log into the ZPA Admin Console
+1. Navigate to Administration > Application Segments
+1. Click Add Application Segment (top-right corner)
+    > **_NOTE:_** The button might be hidden, so if you don't see it, click the 3-bullet button to see it
+1. Fill in the following details:
+    * Name: ZTWKLD Lab Web Apps
+    * Application Domain: app1.<your_domain> (such as app1.mylabdomain.com)
+    * Application Domain: app2.<your_domain> (such as app2.mylabdomain.com)
+    * TCP Port Ranges From: 80
+    * TCP Port Ranges To: 80
+    * Health Reporting: Continuous
+1. Click Next and fill in the following:
+    * Add Segment Group
+    * Name: ZTWKLD Lab Apps
+1. Click Next and fill in the following:
+    * Add Server Group
+    * Name: ZTWKLD Lab
+    * App Connector Groups: ZT for Workloads AWS Lab
+1. Click Next
+1. Click Save
+
 ## Configure ZPA Access Policy
 <sup>[(Back to top)](#table-of-contents)</sup>
+
+1. Log into the ZPA Admin Console
+1. Navigate to Administration > Access Policy
+1. Click Add Rule and fill in the following:
+    * Name: ZTWKLD Lab Web Apps
+    * Criteria > Add Criteria > Client Types
+    * Select Cloud Connector from the Client Types Criteria
+    * Criteria > Add Criteria > Applications
+    * Select the Application Segment: ZTWKLD Lab Web Apps
+1. Click Save
+        > **_NOTE:_** If your ZPA Tenant has existing (User) Policies or explicit Block policies, change the order of this new policy to be Rule Order 1
 
 ## Configure ZPA Client Forwarding Policy
 <sup>[(Back to top)](#table-of-contents)</sup>
 
+1. Log into the ZPA Admin Console
+1. Navigate to Administration > Client Forwarding Policy
+1. Click Add Rule and fill in the following:
+    * Name: Cloud Connector Allowed Apps Only
+    * Rule Action: Only Forward Allowed Applications
+    * Criteria > Add Criteria > Client Types
+    * Select Cloud Connector from the Client Types Criteria
+1. Click Save
+        > **_NOTE:_** If your ZPA Tenant has existing Client Forwarding Policies, change the order of this new policy to be Rule Order 1
+
 ## Configure Cloud Connector Traffic Forwarding Policy
 <sup>[(Back to top)](#table-of-contents)</sup>
 
-## Configure Workloads to Route to Cloud Connector
-<sup>[(Back to top)](#table-of-contents)</sup>
+1. Log into the Cloud Connector admin console
+1. Navigate to Forwarding > Traffic Forwarding
+1. Click Add Traffic Forwarding Rule and fill out the following:
+    * Rule Order: 1
+    * Rule Name: ZPA DNS Forwarding
+    * Forwarding Method: Direct (?????)
+    * Criteria > Services > Network Services. Check the box for DNS in Network Services
+    * Criteria > Destination > Destination IP Address / FQDN. Add the following IP Addresses: 185.46.212.88, 185.46.212.89
+1. Click Save
+1. Navigate to Activation > Activate
 
 ## Deploy AWS DNS Resolvers for Lab Domain
+<sup>[(Back to top)](#table-of-contents)</sup>
+
+1. Log into your AWS Account
+1. Change to the following region: *US East (N. Virginia) us-east-1*. 
+    > **_NOTE:_** You can use other regions but this lab guide and CloudFormationtemplates were built in the us-east-1 region so I know it works.
+1. Navigate to the CloudFormation service
+1. Click Create Stack > With new resources (Standard)
+1. Select the Upload a template file option
+1. Click Choose file
+1. Navigate to the directory where you cloned/downloaded the CFTs in this repo
+1. Select the file: 5-Create_DNS_Resolver.yaml
+1. Click Next
+    * Provide a stack name: ZPACCLAB-WKLDDNS
+    * Select your Zscaler Cloud, such as zscalerthree.net
+    * Select ZPA or ZPA Beta Cloud
+    * Select the Workloads VPC (ZPACCLAB-WKLDVPC)
+    * Select the Workload Subnet (WorkloadSubnet)
+    * Type the your lab domain into the ZPA Apps List, such as: mylabdomain.com
+1. Click Next
+1. Click Add new tag
+    * Key: Owner
+    * Value: your_first_name
+1. Click Next and check the boxes for:
+    * I acknowledge that AWS CloudFormation might create IAM resources.
+    * I acknowledge that AWS CloudFormation might create IAM resources with custom names.
+    * I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND
+1. Click Submit
+
+## Configure Workload Subnet to Route to Cloud Connector
 <sup>[(Back to top)](#table-of-contents)</sup>
 
 ## Test Workload to Private App Access
