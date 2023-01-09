@@ -57,8 +57,10 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 # Lab Instructions
 <sup>[(Back to top)](#table-of-contents)</sup>
 
-## Create a ZPA App Connnector Provisioning Key
+## 1. Create a ZPA App Connnector Provisioning Key
 <sup>[(Back to top)](#table-of-contents)</sup>
+
+<div style="position: relative; padding-bottom: 56.42633228840126%; height: 0;"><iframe src="https://www.loom.com/embed/0bde467156dc4c66bf29a976ec4a8ae7" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
 1. Log into the ZPA Admin Console [https://admin.private.zscaler.com](https://admin.private.zscaler.com)
 1. Navigate to Administration > App Connectors
