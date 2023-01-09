@@ -14,7 +14,6 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
   - [Verify No Connectivity Between VPCs](#verify-no-connectivity-between-vpcs)
   - [Configure ZPA Application Segments](#configure-zpa-application-segments)
   - [Configure ZPA Access Policy](#configure-zpa-access-policy)
-  - [Configure ZPA Client Forwarding Policy](#configure-zpa-client-forwarding-policy)
   - [Configure Cloud Connector Traffic Forwarding Policy](#configure-cloud-connector-traffic-forwarding-policy)
   - [Deploy AWS DNS Resolvers for Lab Domain](#deploy-aws-dns-resolvers-for-lab-domain)
   - [Configure Workload Subnet to Route to Cloud Connector](#configure-workload-subnet-to-route-to-cloud-connector)
@@ -239,26 +238,10 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Save
         > **_NOTE:_** If your ZPA Tenant has existing Client Forwarding Policies, change the order of this new policy to be Rule Order 1
 
-## Configure Cloud Connector Traffic Forwarding Policy
-<sup>[(Back to top)](#table-of-contents)</sup>
-
-1. Log into the Cloud Connector admin console
-1. Navigate to Forwarding > Traffic Forwarding
-1. Click Add Traffic Forwarding Rule and fill out the following:
-    * Rule Order: 1
-    * Rule Name: ZPA DNS Forwarding
-    * Forwarding Method: Direct (?????)
-    * Criteria > Services > Network Services. Check the box for DNS in Network Services
-    * Criteria > Destination > Destination IP Address / FQDN. Add the following IP Addresses: 185.46.212.88, 185.46.212.89
-1. Click Save
-1. Navigate to Activation > Activate
-
 ## Deploy AWS DNS Resolvers for Lab Domain
 <sup>[(Back to top)](#table-of-contents)</sup>
 
 1. Log into your AWS Account
-1. Change to the following region: *US East (N. Virginia) us-east-1*. 
-    > **_NOTE:_** You can use other regions but this lab guide and CloudFormationtemplates were built in the us-east-1 region so I know it works.
 1. Navigate to the CloudFormation service
 1. Click Create Stack > With new resources (Standard)
 1. Select the Upload a template file option
@@ -271,7 +254,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
     * Select ZPA or ZPA Beta Cloud
     * Select the Workloads VPC (ZPACCLAB-WKLDVPC)
     * Select the Workload Subnet (WorkloadSubnet)
-    * Type the your lab domain into the ZPA Apps List, such as: mylabdomain.com
+    * Type the your lab app FQDNS into the ZPA Apps List (comma-seperated), such as: app1.mylabdomain.com, app2.mylabdomain.com
 1. Click Next
 1. Click Add new tag
     * Key: Owner
@@ -285,8 +268,76 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## Configure Workload Subnet to Route to Cloud Connector
 <sup>[(Back to top)](#table-of-contents)</sup>
 
+1. Log into your AWS Account
+1. Navigate to the VPC service > Route Tables
+1. Check the box for the Workloads Subnet (ZPACCLAB-WKLDVPC Workload Routes)
+1. Click on Routes
+1. Click Edit routes
+1. Click Add route and add the following:
+    * Destination: 185.46.212.88/32, Target: Network Interface > Select the ENI labeled with (ZPACCLAB-CC-CloudConnectorSrvcIF)
+1. Click Add route and add the following:
+    * Destination: 185.46.212.89/32, Target: Network Interface > Select the ENI labeled with (ZPACCLAB-CC-CloudConnectorSrvcIF)
+1. Click Add route and add the following:
+    * Destination: 10.254.0.0/19, Target: Network Interface > Select the ENI labeled with (ZPACCLAB-CC-CloudConnectorSrvcIF)
+1. Click Save changes
+    > **_NOTE:_** Route changes are usually fast but you might want to wait 30 seconds before continuing...
+
 ## Test Workload to Private App Access
 <sup>[(Back to top)](#table-of-contents)</sup>
 
+1. Log into your AWS Account
+1. Navigate to the EC2 service
+1. Click on Instances (running)
+1. Check the box for the Workload instance (ZPACCLAB-WKLDVPC-Workload)
+1. Click Connect > Session Manager > Connect
+    > **_NOTE:_** The Session Manager shell will open in a new tab
+1. Run the following commands to verify Synthetic IP Addresses (10.254.0.0/19) are returned for the ZPA Apps:
+    * dig +short app1.<your_lab_domain>
+    * dig +short app2.<your_lab_domain>
+1. Run the following command to verify no DNS response exists for a non-existant app in your domain:
+    * dig +short app3.<your_lab_domain>
+1. Log into the ZPA Admin Console in another web browser tab
+1. Navigate to Live Logs view in ZPA Admin Console
+1. Switch back to the Workload session tab
+1. Run the following command to verify the private web application server responds:
+    * curl app1.<your_lab_domain>
+    * The web page response should be: "Private Application 1"
+1. Switch back to the ZPA Admin Console Live Logs view
+1. Click New Logs near the bottom to see the sessions for app1
+1. Switch back to the Workload session tab
+1. Run the following command to verify the private web application server responds:
+    * curl app2.<your_lab_domain>
+    * The web page response should be: "Private Application 2"
+1. Switch back to the ZPA Admin Console Live Logs view
+1. Click New Logs near the bottom to see the sessions for app2
+1. Optionally, watch the rest of the lab video for additional ideas on things to test, settings to change, to play with various outcomes!
+    > **_NOTE 2:_** Don't forget to tear down your lab when you are done! Instructions are in the next section below...
+
 ## Tear Down Lab
 <sup>[(Back to top)](#table-of-contents)</sup>
+
+1. Log into your AWS Account
+1. Navigate to the VPC service > Route Tables
+1. Check the box for the Workloads Subnet (ZPACCLAB-WKLDVPC Workload Routes)
+1. Click on Routes
+1. Click Edit routes
+1. Remove the 3 routes created earlier (the Targets will have the ENI of the Cloud Connector)
+1. Click Save changes
+1. Navigate to the CloudFormation service
+1. Delete the following CloudFormation Stacks in order:
+    * ZPACCLAB-WKLDDNS
+    * ZPACCLAB-CC
+    * ZPACCLAB-MACRO
+    * ZPACCLAB-WKLDVPC
+    * ZPACCLAB-APPVPC
+    > **_NOTE:_** You can delete stacks by select a Stack and clicking the Delete button. Wait for the stack to delete before deleting the next one...
+1. Log into the ZPA Admin Console to optionally delete the objects you created:
+    * Access Policy
+    * App Segment
+    * App Segment Group
+    * Server Group
+    * App Connector
+    * App Connector Provisioning Key
+    * App Connector Group
+
+Congrats, you have completed the ZPA for Workloads 101 Hands-on Lab!!!
