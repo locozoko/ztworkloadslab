@@ -3,7 +3,9 @@
 The Zscaler Hands-On Lab uses these AWS CloudFormation Templates to build out the required lab infrastructure. This includes VPCs, subnets, NAT and 
 Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler components. 
 
-## Table of Contents
+---
+
+# **Table of Contents**
 
 - [Prerequisites](#prerequisites)
 - [Lab Instructions](#lab-instructions)
@@ -20,7 +22,9 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
   - [Test Workload to Private App Access](#test-workload-to-private-app-access)
   - [Tear Down Load](#tear-down-lab)
 
-# Prerequisites
+--- 
+
+# **Prerequisites**
 <sup>[(Back to top)](#table-of-contents)</sup>
 
 ## Git
@@ -54,13 +58,19 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 - A Zscaler Private Access (ZPA) tenant is required with administrative privileges
 
-# Lab Instructions
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
 
-## 1. Create a ZPA App Connnector Provisioning Key
-<sup>[(Back to top)](#table-of-contents)</sup>
+---
 
-<div style="position: relative; padding-bottom: 56.42633228840126%; height: 0;"><iframe src="https://www.loom.com/embed/0bde467156dc4c66bf29a976ec4a8ae7" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+# **Lab Instructions**
+
+## **1. Create a ZPA App Connnector Provisioning Key**
+
+<a href="https://www.loom.com/share/0bde467156dc4c66bf29a976ec4a8ae7">
+    <p>LAB01 - Create ZPA App Connector Provisioning Key - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/0bde467156dc4c66bf29a976ec4a8ae7-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into the ZPA Admin Console [https://admin.private.zscaler.com](https://admin.private.zscaler.com)
 1. Navigate to Administration > App Connectors
@@ -81,8 +91,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
     > **_NOTE:_** If you forget to copy the key, you can navigate to App Connector Provisioning Keys to copy it again later
 1. Click Done
 
-## Deploy the Application VPC Resources
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **2. Deploy the Application VPC Resources**
+
+<a href="https://www.loom.com/share/4b5cd3ee36894c21a15693d0b493a483">
+    <p>LAB02 - Deploy Application VPC - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/4b5cd3ee36894c21a15693d0b493a483-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into your AWS Account
 1. Change to the following region: *US East (N. Virginia) us-east-1*. 
@@ -111,10 +128,16 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Submit
 1. Wait until the CloudFormation Stack Status changes from CREATE_IN_PROGRESS (blue) to CREATE_COMPLETE (green) before continuing
     > **_NOTE:_** This can take serveral minutes to complete
-1. TEST 123
 
-## Deploy the Workload VPC Resources
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **3. Deploy the Workload VPC Resources**
+
+<a href="https://www.loom.com/share/cb7b79e9f4514bb8bd65e139fc4ab994">
+    <p>LAB03 - Deploy Workload VPC - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/cb7b79e9f4514bb8bd65e139fc4ab994-with-play.gif">
+  </a>
+  <br><br>
 
 1. Navigate to AWS Admin Console > CloudFormation service
 1. Click Create Stack > With new resources (Standard)
@@ -137,10 +160,16 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Submit
 1. Wait until the CloudFormation Stack Status changes from CREATE_IN_PROGRESS (blue) to CREATE_COMPLETE (green) before continuing
     > **_NOTE:_** This can take serveral minutes to complete
-1. TEST 123
 
-## Deploy the Cloud Connector Resources
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **4. Deploy the Cloud Connector Resources**
+
+<a href="https://www.loom.com/share/799ed07f639b4de5962f090945346e89">
+    <p>LAB04 - Deploy Cloud Connector - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/799ed07f639b4de5962f090945346e89-with-play.gif">
+  </a>
+  <br><br>
 
 1. Navigate to AWS Admin Console > CloudFormation service
 1. Click Create Stack > With new resources (Standard)
@@ -186,11 +215,57 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Verify the Cloud Connector is Active (Green) in the Dashboard
     > **IMPORTANT:_** DO NOT PROCEED UNTIL THIS HAPPENS
 
-## Verify No Connectivity between VPCs
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
 
-## Configure ZPA Application Segments
-<sup>[(Back to top)](#table-of-contents)</sup>
+## **5. Verify No Connectivity between VPCs**
+
+<a href="https://www.loom.com/share/88c09858d0e84acf913abba1eadf9f3a">
+    <p>LAB05 - Verify No Connectivity Between VPCs - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/88c09858d0e84acf913abba1eadf9f3a-with-play.gif">
+  </a>
+  <br><br>
+
+1. Navigate to AWS Admin Console > CloudFormation service
+1. Click the radio button for the App VPC Stack (ZPACCLAB-APPVPC)
+1. Click the Outputs tab
+1. Copy the AppServer1FQDN (it will be: app1.<your_lab_domain>)
+1. Navigate to AWS Admin Console > EC2 service > Instances (running)
+1. Select the App1 EC2 Instance (ZPACCLAB-APPVPC-App1)
+1. Click Connect > Session Manager > Connect
+    > **_NOTE:_** A new browser tab will open with a session to the App Server (Linux terminal)
+1. Run the following command to verify local DNS is working: dig +short app1.<your_lab_domain>
+    > **_NOTE:_** A private IP Address in the 10.192.0.0/16 address space will be returned
+1. Repeat for the second app server: dig +short app2.<your_lab_domain>
+    > **_NOTE:_** A private IP Address in the 10.192.0.0/16 address space will be returned
+1. Run the following command to verify the web server is working: curl app1.<your_lab_domain>
+    > **_NOTE:_** The web page response is a simple 1 line "Private Application 1"
+1. Repeat for the second app server: curl app2.<your_lab_domain>
+    > **_NOTE:_** The web page response is a simple 1 line "Private Application 2"
+1. Close the SSH session browser tab and go back to EC2 Instances
+1. Select the Workload EC2 Instance (ZPACCLAB-WKLDVPC-Workload)
+1. Click Connect > Session Manager > Connect
+1. Run the following command to verify DNS does NOT work: dig +short app1.<your_lab_domain>
+    > **_NOTE:_** No IP Address should be returned
+1. Repeat for the second app server: dig +short app2.<your_lab_domain>
+    > **_NOTE:_**  No IP Address should be returned*
+1. Run the following command to verify no connectivity to the web apps: curl app1.<your_lab_domain>
+    > **_NOTE:_** You should get an error like "curl: (6) Could not resolve host: app1.<your_lab_domain>
+1. Open a new tab and navigate to AWS Admin Console > CloudFormation (or open the tab)
+1. Make sure the App VPC Lab (ZPACCLAB-APPVPC) stack is selected > Outputs tab
+1. Copy the IP Address for the AppServer1IP object
+1. Run the following command to verify no connectivity to the web apps via IP: curl <app1_IP_address>
+    > **_NOTE:_** You should get an error like "curl: (7)( Failed to connect to <ip_address> port 80 ... : No route to host"
+1. Close the session tab
+
+<br>
+
+## **6. Configure ZPA Application Segments**
+
+<a href="https://www.loom.com/share/e7b62299978c4e6dad2c4ee7a62940c5">
+    <p>LAB06 - Create ZPA App Segment - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/e7b62299978c4e6dad2c4ee7a62940c5-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into the ZPA Admin Console
 1. Navigate to Administration > Application Segments
@@ -213,8 +288,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Next
 1. Click Save
 
-## Configure ZPA Access Policy
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **7. Configure ZPA Access Policy**
+
+<a href="https://www.loom.com/share/8c45e778e47740d9900f3c0300e5893e">
+    <p>LAB07 - Create ZPA Access Policy - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/8c45e778e47740d9900f3c0300e5893e-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into the ZPA Admin Console
 1. Navigate to Administration > Access Policy
@@ -227,8 +309,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Save
         > **_NOTE:_** If your ZPA Tenant has existing (User) Policies or explicit Block policies, change the order of this new policy to be Rule Order 1
 
-## Configure ZPA Client Forwarding Policy
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **8. Configure ZPA Client Forwarding Policy**
+
+<a href="https://www.loom.com/share/4fc00f211c054b87b57d4b7239653f8c">
+    <p>LAB08 - Configure ZPA Client Forwarding Policy - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/4fc00f211c054b87b57d4b7239653f8c-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into the ZPA Admin Console
 1. Navigate to Administration > Client Forwarding Policy
@@ -240,8 +329,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Save
         > **_NOTE:_** If your ZPA Tenant has existing Client Forwarding Policies, change the order of this new policy to be Rule Order 1
 
-## Deploy AWS DNS Resolvers for Lab Domain
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **9. Deploy AWS DNS Resolvers for Lab Domain**
+
+<a href="https://www.loom.com/share/c64211e9a03a40688b69e5d49769a1e8">
+    <p>LAB09 - Deploy AWS DNS Resolvers - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/c64211e9a03a40688b69e5d49769a1e8-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into your AWS Account
 1. Navigate to the CloudFormation service
@@ -267,8 +363,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
     * I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND
 1. Click Submit
 
-## Configure Workload Subnet to Route to Cloud Connector
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **10. Configure Workload Subnet to Route to Cloud Connector**
+
+<a href="https://www.loom.com/share/b50201c3d08348af93e6b176813c71ba">
+    <p>LAB10 - Configure Workload Route Table - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/b50201c3d08348af93e6b176813c71ba-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into your AWS Account
 1. Navigate to the VPC service > Route Tables
@@ -284,8 +387,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Save changes
     > **_NOTE:_** Route changes are usually fast but you might want to wait 30 seconds before continuing...
 
-## Test Workload to Private App Access
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **11. Test Workload to Private App Access**
+
+<a href="https://www.loom.com/share/2fa8d35e29554bcc9e834e558520c1e5">
+    <p>LAB011 - Test Workloads through ZPA - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/2fa8d35e29554bcc9e834e558520c1e5-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into your AWS Account
 1. Navigate to the EC2 service
@@ -315,8 +425,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Optionally, watch the rest of the lab video for additional ideas on things to test, settings to change, to play with various outcomes!
     > **_NOTE 2:_** Don't forget to tear down your lab when you are done! Instructions are in the next section below...
 
-## Tear Down Lab
-<sup>[(Back to top)](#table-of-contents)</sup>
+<br>
+
+## **12. Tear Down Lab**
+
+<a href="https://www.loom.com/share/9b0d6748af81425bbea7108a8d50c191">
+    <p>LAB12 - Destroy Lab Infrastructure - Watch Video</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/9b0d6748af81425bbea7108a8d50c191-with-play.gif">
+  </a>
+  <br><br>
 
 1. Log into your AWS Account
 1. Navigate to the VPC service > Route Tables
@@ -342,4 +459,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
     * App Connector Provisioning Key
     * App Connector Group
 
-Congrats, you have completed the ZPA for Workloads 101 Hands-on Lab!!!
+<br>
+
+## **Congrats, you have completed the ZPA for Workloads (101) Hands-on Lab!**
+## *Please return to the Training Course to take the quiz and complete the training* 
