@@ -108,6 +108,9 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## **2. Deploy the Application VPC Resources**
 
+<br>
+> LAB INFO: The following resources will be available after running the CloudFormation script in this section:
+
 <img
   src="lab-diagrams/1-ApplicationVPC.png"
   style="display: inline-block; margin: 0 auto; max-width: 850px">
@@ -150,6 +153,9 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## **3. Deploy the Workload VPC Resources**
 
+<br>
+> LAB INFO: The following resources will be available after running the CloudFormation script in this section:
+
 <img
   src="lab-diagrams/2-WorkloadVPC.png"
   style="display: inline-block; margin: 0 auto; max-width: 850px">
@@ -186,9 +192,15 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## **4. Deploy the Cloud Connector Resources**
 
+<br>
+> LAB INFO: The following resources will be available after running the first CloudFormation script in this section:
+
 <img
   src="lab-diagrams/3-CCMacro.png"
   style="display: inline-block; margin: 0 auto; max-width: 850px">
+
+<br>
+> LAB INFO: The following resources will be available after running the second CloudFormation script in this section:
 
 <img
   src="lab-diagrams/4-CloudConnector.png"
@@ -361,6 +373,9 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 <br>
 
 ## **9. Deploy AWS DNS Resolvers for Lab Domain**
+
+<br>
+> LAB INFO: The following resources will be available after running the CloudFormation script in this section:
 
 <img
   src="lab-diagrams/5-DNSResolver.png"
