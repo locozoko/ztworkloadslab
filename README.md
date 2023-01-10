@@ -9,18 +9,20 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 - [Prerequisites](#prerequisites)
 - [Lab Instructions](#lab-instructions)
-  - [Create a ZPA App Connnector Provisioning Key](#create-a-zpa-app-connector-provisioning-key)
-  - [Deploy the Application VPC Resources](#deploy-the-application-vpc-resources)
-  - [Deploy the Workload VPC Resources](#deploy-the-workload-vpc-resources)
-  - [Deploy the Cloud Connector Resources](#deploy-the-cloud-connector-resources)
-  - [Verify No Connectivity Between VPCs](#verify-no-connectivity-between-vpcs)
-  - [Configure ZPA Application Segments](#configure-zpa-application-segments)
-  - [Configure ZPA Access Policy](#configure-zpa-access-policy)
-  - [Configure Cloud Connector Traffic Forwarding Policy](#configure-cloud-connector-traffic-forwarding-policy)
-  - [Deploy AWS DNS Resolvers for Lab Domain](#deploy-aws-dns-resolvers-for-lab-domain)
-  - [Configure Workload Subnet to Route to Cloud Connector](#configure-workload-subnet-to-route-to-cloud-connector)
-  - [Test Workload to Private App Access](#test-workload-to-private-app-access)
-  - [Tear Down Load](#tear-down-lab)
+  - Create a ZPA App Connnector Provisioning Key
+  - Deploy the Application VPC Resources
+  - Deploy the Workload VPC Resources
+  - Deploy the Cloud Connector Resources
+  - Verify No Connectivity Between VPCs
+  - Configure ZPA Application Segments
+  - Configure ZPA Access Policy
+  - Configure Cloud Connector Traffic Forwarding Policy
+  - Deploy AWS DNS Resolvers for Lab Domain
+  - Configure Workload Subnet to Route to Cloud Connector
+  - Test Workload to Private App Access
+  - Tear Down Lab
+
+<br>
 
 --- 
 
@@ -63,6 +65,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ---
 
 # **Lab Instructions**
+<sup>[(Back to top)](#table-of-contents)</sup>
 
 ## **1. Create a ZPA App Connnector Provisioning Key**
 
@@ -463,3 +466,5 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## **Congrats, you have completed the ZPA for Workloads (101) Hands-on Lab!**
 ## *Please return to the Training Course to take the quiz and complete the training* 
+
+<sup>[(Back to top)](#table-of-contents)</sup>
