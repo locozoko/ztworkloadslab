@@ -70,7 +70,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **1. Create a ZPA App Connnector Provisioning Key**
 
 <a href="https://www.loom.com/share/0bde467156dc4c66bf29a976ec4a8ae7" target="_blank">
-    <p>LAB01 - Create ZPA App Connector Provisioning Key - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB01 - Create ZPA App Connector Provisioning Key - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/0bde467156dc4c66bf29a976ec4a8ae7-with-play.gif">
   </a>
   <br><br>
@@ -99,7 +99,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **2. Deploy the Application VPC Resources**
 
 <a href="https://www.loom.com/share/4b5cd3ee36894c21a15693d0b493a483" target="_blank">
-    <p>LAB02 - Deploy Application VPC - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB02 - Deploy Application VPC - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/4b5cd3ee36894c21a15693d0b493a483-with-play.gif">
   </a>
   <br><br>
@@ -137,7 +137,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **3. Deploy the Workload VPC Resources**
 
 <a href="https://www.loom.com/share/cb7b79e9f4514bb8bd65e139fc4ab994" target="_blank">
-    <p>LAB03 - Deploy Workload VPC - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB03 - Deploy Workload VPC - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/cb7b79e9f4514bb8bd65e139fc4ab994-with-play.gif">
   </a>
   <br><br>
@@ -169,7 +169,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **4. Deploy the Cloud Connector Resources**
 
 <a href="https://www.loom.com/share/799ed07f639b4de5962f090945346e89" target="_blank">
-    <p>LAB04 - Deploy Cloud Connector - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB04 - Deploy Cloud Connector - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/799ed07f639b4de5962f090945346e89-with-play.gif">
   </a>
   <br><br>
@@ -223,7 +223,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **5. Verify No Connectivity between VPCs**
 
 <a href="https://www.loom.com/share/88c09858d0e84acf913abba1eadf9f3a" target="_blank">
-    <p>LAB05 - Verify No Connectivity Between VPCs - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB05 - Verify No Connectivity Between VPCs - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/88c09858d0e84acf913abba1eadf9f3a-with-play.gif">
   </a>
   <br><br>
@@ -265,7 +265,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **6. Configure ZPA Application Segments**
 
 <a href="https://www.loom.com/share/e7b62299978c4e6dad2c4ee7a62940c5" target="_blank">
-    <p>LAB06 - Create ZPA App Segment - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB06 - Create ZPA App Segment - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/e7b62299978c4e6dad2c4ee7a62940c5-with-play.gif">
   </a>
   <br><br>
@@ -296,7 +296,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **7. Configure ZPA Access Policy**
 
 <a href="https://www.loom.com/share/8c45e778e47740d9900f3c0300e5893e" target="_blank">
-    <p>LAB07 - Create ZPA Access Policy - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB07 - Create ZPA Access Policy - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/8c45e778e47740d9900f3c0300e5893e-with-play.gif">
   </a>
   <br><br>
@@ -317,7 +317,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **8. Configure ZPA Client Forwarding Policy**
 
 <a href="https://www.loom.com/share/4fc00f211c054b87b57d4b7239653f8c" target="_blank">
-    <p>LAB08 - Configure ZPA Client Forwarding Policy - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB08 - Configure ZPA Client Forwarding Policy - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/4fc00f211c054b87b57d4b7239653f8c-with-play.gif">
   </a>
   <br><br>
@@ -337,7 +337,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **9. Deploy AWS DNS Resolvers for Lab Domain**
 
 <a href="https://www.loom.com/share/c64211e9a03a40688b69e5d49769a1e8" target="_blank">
-    <p>LAB09 - Deploy AWS DNS Resolvers - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB09 - Deploy AWS DNS Resolvers - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/c64211e9a03a40688b69e5d49769a1e8-with-play.gif">
   </a>
   <br><br>
@@ -371,7 +371,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **10. Configure Workload Subnet to Route to Cloud Connector**
 
 <a href="https://www.loom.com/share/b50201c3d08348af93e6b176813c71ba" target="_blank">
-    <p>LAB10 - Configure Workload Route Table - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB10 - Configure Workload Route Table - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/b50201c3d08348af93e6b176813c71ba-with-play.gif">
   </a>
   <br><br>
@@ -395,7 +395,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **11. Test Workload to Private App Access**
 
 <a href="https://www.loom.com/share/2fa8d35e29554bcc9e834e558520c1e5" target="_blank">
-    <p>LAB011 - Test Workloads through ZPA - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB011 - Test Workloads through ZPA - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/2fa8d35e29554bcc9e834e558520c1e5-with-play.gif">
   </a>
   <br><br>
@@ -433,7 +433,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 ## **12. Tear Down Lab**
 
 <a href="https://www.loom.com/share/9b0d6748af81425bbea7108a8d50c191" target="_blank">
-    <p>LAB12 - Destroy Lab Infrastructure - Watch Video (Right-Click > Open in New Tab)</p>
+    <p>LAB12 - Destroy Lab Infrastructure - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/9b0d6748af81425bbea7108a8d50c191-with-play.gif">
   </a>
   <br><br>
