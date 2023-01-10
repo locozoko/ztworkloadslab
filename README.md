@@ -3,6 +3,16 @@
 The Zscaler Hands-On Lab uses these AWS CloudFormation Templates to build out the required lab infrastructure. This includes VPCs, subnets, NAT and 
 Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler components. 
 
+<img
+  src="lab-diagrams/0-Overview.png"
+  style="display: inline-block; margin: 0 auto; max-width: 850px">
+
+> *Watch this video to get an overview of all the lab steps:*
+<a href="https://www.loom.com/share/c8f0cdcbf1ec4845b63853e6b2c15e80">
+    <p>LAB00 - ZPA for Workload Lab Topology Overview - Watch Video (Right-Click & Open Link in New Tab)</p>
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/c8f0cdcbf1ec4845b63853e6b2c15e80-with-play.gif">
+  </a>
+<br>
 ---
 
 # **Table of Contents**
@@ -98,6 +108,10 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## **2. Deploy the Application VPC Resources**
 
+<img
+  src="lab-diagrams/1-ApplicationVPC.png"
+  style="display: inline-block; margin: 0 auto; max-width: 850px">
+
 <a href="https://www.loom.com/share/4b5cd3ee36894c21a15693d0b493a483" target="_blank">
     <p>LAB02 - Deploy Application VPC - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/4b5cd3ee36894c21a15693d0b493a483-with-play.gif">
@@ -136,6 +150,10 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## **3. Deploy the Workload VPC Resources**
 
+<img
+  src="lab-diagrams/2-WorkloadVPC.png"
+  style="display: inline-block; margin: 0 auto; max-width: 850px">
+
 <a href="https://www.loom.com/share/cb7b79e9f4514bb8bd65e139fc4ab994" target="_blank">
     <p>LAB03 - Deploy Workload VPC - Watch Video (Right-Click & Open Link in New Tab)</p>
     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/cb7b79e9f4514bb8bd65e139fc4ab994-with-play.gif">
@@ -167,6 +185,14 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 <br>
 
 ## **4. Deploy the Cloud Connector Resources**
+
+<img
+  src="lab-diagrams/3-CCMacro.png"
+  style="display: inline-block; margin: 0 auto; max-width: 850px">
+
+<img
+  src="lab-diagrams/4-CloudConnector.png"
+  style="display: inline-block; margin: 0 auto; max-width: 850px">
 
 <a href="https://www.loom.com/share/799ed07f639b4de5962f090945346e89" target="_blank">
     <p>LAB04 - Deploy Cloud Connector - Watch Video (Right-Click & Open Link in New Tab)</p>
@@ -335,6 +361,10 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 <br>
 
 ## **9. Deploy AWS DNS Resolvers for Lab Domain**
+
+<img
+  src="lab-diagrams/5-DNSResolver.png"
+  style="display: inline-block; margin: 0 auto; max-width: 850px">
 
 <a href="https://www.loom.com/share/c64211e9a03a40688b69e5d49769a1e8" target="_blank">
     <p>LAB09 - Deploy AWS DNS Resolvers - Watch Video (Right-Click & Open Link in New Tab)</p>
