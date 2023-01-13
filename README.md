@@ -58,6 +58,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 
 ## Cloud Connector
 
+- You must be subscribed to Cloud Connector via the AWS Marketplace [Link Here to AWS Marketplace CC](https://aws.amazon.com/marketplace/pp/prodview-cvzx4oiv7oljm)
 - All Cloud Connector prerequisites should be completed as normal. This is out of scope for the lab.
 - The Cloud Connector tenant must have the ZPA-SERVER-PRE SKU enabled
 - Cloud Connector API Key and Credentials must be stored in AWS Secrets Manager in the same Account and Region you plan to deploy the lab
@@ -328,6 +329,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
     * App Connector Groups: ZT for Workloads AWS Lab
 1. Click Next
 1. Click Save
+1. Close/cancel the popup prompting you to modify Access Policies (you will do this in the next lab section)
 
 <br>
 
