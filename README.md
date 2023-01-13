@@ -77,7 +77,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 # **Lab Instructions**
 <sup>[(Back to top)](#table-of-contents)</sup>
 
-## **1. Create a ZPA App Connnector Provisioning Key**
+## **1. Create a ZPA App Connector Provisioning Key**
 
 <a href="https://www.loom.com/share/0bde467156dc4c66bf29a976ec4a8ae7" target="_blank">
     <p>LAB01 - Create ZPA App Connector Provisioning Key - Watch Video (Right-Click & Open Link in New Tab)</p>
