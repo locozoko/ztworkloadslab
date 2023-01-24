@@ -219,6 +219,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
 1. Click Choose file
 1. Navigate to the directory where you cloned/downloaded the CFTs in this repo
 1. Select the file: 3-Create_Macro.yaml
+    > **_NOTE:_** The Macro script is just the prerequiste for deploying Cloud Connectors into this AWS account and region. If you or someone in this AWS account have already deployed it for other purposes, you won't need to deploy it again. If you receive a CloudFormation error stating "zscc-macro already exists.." you can skip this stack and continue the instructions below starting with deploying the "4-Create-CloudConnector.yaml" step.
 1. Click Next and provide the following:
     * Stack Name: ZPACCLAB-MACRO
 1. Click Next
