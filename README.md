@@ -269,7 +269,7 @@ Internet Gateways, Route Tables, App and Workload EC2 instances, and Zscaler com
   <br><br>
 
 1. Navigate to AWS Admin Console > CloudFormation service
-1. Click the radio button for the App VPC Stack (ZPACCLAB-APPVPC)
+1. Click the StackName of the App VPC Stack (ZPACCLAB-APPVPC)
 1. Click the Outputs tab
 1. Copy the AppServer1FQDN (it will be: app1.<your_lab_domain>)
 1. Navigate to AWS Admin Console > EC2 service > Instances (running)
